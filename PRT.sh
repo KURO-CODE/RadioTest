@@ -16,9 +16,6 @@ R="\033[1;31m"
 Y="\033[1;33m"
 EC="\033[0m"
 
-
-#On="ON AIR"
-
 FLAG() {
 	Place="Flag"
 	clear
@@ -38,40 +35,26 @@ ${G} |__|¯¯¯${Y} |__|\__\\\\${R} ¯|__|¯$EC
 
 On_Air_Ban() {
 	clear
-	echo -e "$G ____  __  _      ____   _ _____ 
+	X=0
+	while (( $X < 10 )); do
+		echo -e "$G ____  __  _      ____   _ _____ 
 / () \|  \| |    / () \ | || () )
 \____/|_|\__|   /__/\__\|_||_|\_\
 
 $W Canal:$G $MHZ\n$W Name:$G $RNAME"
-	sleep 0.5
-	clear
-	echo -e "$W ____  __  _      ____   _ _____ 
+		sleep 0.5
+		clear
+		echo -e "$R ____  __  _      ____   _ _____ 
 / () \|  \| |    / () \ | || () )
 \____/|_|\__|   /__/\__\|_||_|\_\
-
-$W Canal:$G $MHZ\n$W Name:$G $RNAME"
-	sleep 0.5
-	clear
-	echo -e "$G ____  __  _      ____   _ _____ 
-/ () \|  \| |    / () \ | || () )
-\____/|_|\__|   /__/\__\|_||_|\_\
-
-$W Canal:$G $MHZ\n$W Name:$G $RNAME"
-	sleep 0.5
-	clear
-	echo -e "$W ____  __  _      ____   _ _____ 
-/ () \|  \| |    / () \ | || () )
-\____/|_|\__|   /__/\__\|_||_|\_\
-
-$W Canal:$G $MHZ\n$W Name:$G $RNAME"
-	sleep 0.5
-	clear
-	echo -e "$G ____  __  _      ____   _ _____ 
-/ () \|  \| |    / () \ | || () )
-\____/|_|\__|   /__/\__\|_||_|\_\ 
 
 $W Canal:$G $MHZ\n$W Name:$G $RNAME $EC"
+		sleep 0.5
+		clear
+		X=$(($X+1))
+	done
 	sleep 1
+	clear
 }
 
 function Main() {
@@ -81,14 +64,12 @@ function Main() {
 	echo -e "$Y      ~${G} Main menu$Y ~\n      -------------\n
      1$W) Default Freq 107.9
      ${Y}2$W) Choice Freq
-#     ${Y}3$W)$G Transmission
      ${Y}9$W)$Y Stop FM
      ${R}0$W)$R Exit$W\n"
 	read -p " Select: " SELECT
 	case $SELECT in
 		1) clear; FILE; RUN;;
 		2) clear; FILE; RUN;;
-#		3) clear;SELECT_FILE; RUN; Main;;
 		9) clear; Kill_FM; Main;;
 		0) RM_SAVE; Kill_FM; EXIT;;
 		*) clear; BAN; echo -e "$R ERROR"; sleep 3; Main;;
@@ -98,7 +79,7 @@ function Main() {
 FREQ() {
 	clear
 	BAN
-	echo -e "$G Choice your Frequance emition$W\n"
+	echo -e "$G Choice your Frequance $W\n"
 	read -p " Freq: " MHZ
 }
 
@@ -106,7 +87,7 @@ NAME() {
 	Place="Name"
 	clear
 	BAN
-	echo -e "your Radio name"
+	echo -e "Your Radio name"
 	read -p " Name: " RNAME
 }
 
@@ -118,20 +99,15 @@ FILE() {
 	read -p " File(s): " MPNAME 
 }
 
-#SAVE() {
-#	echo "$MHZ $RNAME" > save.txt
-#}
-
 function RUN() {
 	Place="Run"
 	if [ "$SELECT" -eq "1" ]; then
 		MHZ="107.9"
 		if [ -f "Default_save.txt" ]; then
-#			MHZ="107.9"
-                        RNAME=`cat Default_save.txt`
-                else
-                        NAME
-                        echo "$RNAME" > Default_save.txt
+			RNAME=`cat Default_save.txt`
+		else
+			NAME
+			echo "$RNAME" > Default_save.txt
 		fi
 		Kill_FM
 		clear
@@ -139,10 +115,7 @@ function RUN() {
 		sox -t mp3 $MPNAME -t wav - | sudo /home/pi/PiFmRds/src/pi_fm_rds -ps $RNAME -audio - &
 		sleep 2
 		clear
-#		BAN
-#		echo -e "$On"
 		On_Air_Ban
-#		sleep 3
 		Main
 	elif [ "$SELECT" -eq "2" ]; then
 		if [ -f "save.txt" ]; then
@@ -159,18 +132,8 @@ function RUN() {
 		sox -t mp3 $MPNAME -t wav - | sudo /home/pi/PiFmRds/src/pi_fm_rds -ps $RNAME -freq $MHZ -audio - &
 		sleep 2
 		clear
-#		BAN
 		On_Air_Ban
-#        	echo -e "$G On Air\n$W Canal:$G $MHZ\n$W Name:$G $RNAME"
-		sleep 3
 		Main
-#	elif [ "$SELECT" -eq "3" ]; then
-#        	sox -t mp3 $MPNAME -t wav - | sudo /home/pi/PiFmRds/src/pi_fm_rds -audio - &
-#		sleep 2
-#		clear
-#		BAN
-#        	echo -e "$G$On$EC"
-#		Main
 	fi
 }
 
@@ -185,8 +148,6 @@ function Kill_FM() {
 		clear
 		BAN
 		echo -e "$W[$R-$W]$Y Kill FM Station$EC"
-#		kill all xterm
-#		sudo pkill pi_fm_rds
 		pkill sox
 		sleep 2
 	fi
@@ -204,17 +165,17 @@ function cap_traps() {
 RM_SAVE() {
 	if [ -f "Default_save.txt" ]; then
 		rm -f Default_save.txt
-        fi
+	fi
 	if [ -f "save.txt" ]; then
-                rm -f save.txt
-        fi
+		rm -f save.txt
+	fi
 }
 
 EXIT() {
 	RM_SAVE
 	clear
 	FLAG
-	echo -e "     Thank for using ${G}P${Y}R${R}T$EC"
+	echo -e "\t Thank for using ${G}P${Y}R${R}T$EC"
 	sleep 3
 	clear
 	exit
